@@ -1,7 +1,11 @@
-resource "aws_instance" "cluster" {
-  count = 3
+provider "aws" {
+  region = "us-east-2"
+}
 
-  # ...
+resource "aws_instance" "cluster" {
+    count = 3
+    ami = "ami-ebd02392"
+    instance_type = "t2.micro"
 }
 
 # The primary use-case for the null resource is as a do-nothing container for
