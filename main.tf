@@ -1,7 +1,11 @@
-resource "aws_instance" "cluster" {
-  count = 3
+provider "aws" {
+  region = "us-east-2"
+}
 
-  # ...
+resource "aws_instance" "cluster" {
+    count = 3
+    ami = "ami-ebd02392"
+    instance_type = "t2.micro"
 }
 
 # The primary use-case for the null resource is as a do-nothing container for
@@ -17,6 +21,11 @@ resource "null_resource" "cluster" {
     cluster_instance_ids = join(",", aws_instance.cluster.*.id)
   }
 
+  # Bootstrap script can run on any instance of the cluster
+  # So we just choose the first in this case
+  connection {
+    host = element(aws_instance.cluster.*.public_ip, 0)
+  }
 
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the clutser
